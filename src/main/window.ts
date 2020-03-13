@@ -8,7 +8,7 @@ export let win: BrowserWindow
 export const WIDTH = 460
 export const TITLE_HEIGHT = 24
 
-export function createWindow () {
+export function createWindow() {
   win = new BrowserWindow({
     width: 460,
     height: 200,
@@ -20,7 +20,7 @@ export function createWindow () {
     show: false,
     transparent: true,
     fullscreen: true, // linux does not support changing at runtime, add config?
-    resizable: false,
+    resizable: true, // Must be true (see resize workaround below)
     // backgroundColor: '#2d3748', // gray-800
     webPreferences: {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION as any,
@@ -39,7 +39,12 @@ export function createWindow () {
     checkForUpdates()
   }
 
-  win.setIgnoreMouseEvents(true)
+  // Workaround electron issue with mouseleave event
+  // https://github.com/electron/electron/issues/611
+  win.on('resize', (e: any) => {
+    e.preventDefault();
+  });
+  win.setIgnoreMouseEvents(true, { forward: true })
   win.once('ready-to-show', () => {
     // place here because of linux
     win.setAlwaysOnTop(true, 'screen-saver')

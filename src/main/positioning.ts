@@ -39,7 +39,7 @@ function hideWindow (willShow?: boolean) {
   if (!willShow) {
     win.hide()
   }
-  win.setIgnoreMouseEvents(true)
+  win.setIgnoreMouseEvents(true, { forward: true })
 
   if (isWindowLocked) {
     isWindowLocked = false
@@ -74,6 +74,8 @@ export function setupShowHide () {
   ipcMain.on(PRICE_CHECK_HIDE, () => { hideWindow() })
 
   ipcMain.on(PRICE_CHECK_MOUSE, (e, name: string, modifier?: string) => {
+    logger.debug('PRICE_CHECK_MOUSE', { source: 'price-check', fn: 'PRICE_CHECK_MOUSE', name: name, modifier: modifier })
+
     if (name === 'click') {
       if (!isWindowShown) return // close button `click` event arrives after hide
 
@@ -85,10 +87,21 @@ export function setupShowHide () {
         logger.debug('Clicked inside window after lock', { source: 'price-check' })
       }
     } else if (name === 'leave') {
-      if (!isClickedAfterLock && leagues.length) {
+      if (!leagues.length) {
+        return
+      }
+
+      if (!isClickedAfterLock && modifier !== config.get('priceCheckKeyHold')) {
         logger.debug('Mouse has left the window without a single click', { source: 'price-check' })
         hideWindow()
       }
+
+      logger.debug('Set PoeWindow active', { source: 'price-check' })
+      if (process.platform === 'win32') {
+        // Focus POE window when cursor moves out of trade window, so price-checking other items works without clicking on the POE window first
+        windowManager.focusWindowById(PoeWindow.pid!)
+      }
+      PoeWindow.isActive = true
     } else if (name === 'enter') {
       if (isWindowLocked) return
 
@@ -140,7 +153,12 @@ export function setupShowHide () {
 function positionWindow (tradeWindow: BrowserWindow) {
   const poePos = PoeWindow.bounds!
 
-  const newBounds = poePos
+  const newBounds = {
+    x: getOffsetX(poePos),
+    y: poePos.y,
+    width: WIDTH,
+    height: poePos.height
+  }
 
   logger.debug('Reposition window', { source: 'price-check', newBounds, poeBounds: poePos })
   tradeWindow.setBounds(newBounds, false)

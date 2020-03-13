@@ -4,10 +4,10 @@
       class="w-full layout-column" style="width: calc(100% - 460px);">
       <browser-mode />
     </div>
-    <div v-if="!browserMode" class="layout-column border border-green-700" style="border-width: 4px;"
+    <!-- <div v-if="!browserMode" class="layout-column border border-green-700" style="border-width: 4px;"
       :style="{ width: poeUiWidth }">
       wiasds
-    </div>
+    </div> -->
     <div class="flex-grow layout-column" style="max-width: 460px;">
       <app-titlebar @close="hideWindow" :title="title">
         <div class="flex">
@@ -46,10 +46,10 @@
         </div>
       </div>
     </div>
-    <div v-if="!browserMode" class="layout-column border border-green-700" style="border-width: 4px;"
+    <!-- <div v-if="!browserMode" class="layout-column border border-green-700" style="border-width: 4px;"
       :style="{ width: poeUiWidth }">
       wiasds
-    </div>
+    </div> -->
   </div>
 </template>
 

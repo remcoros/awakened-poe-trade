@@ -60,8 +60,11 @@ export default {
       const key = e.ctrlKey ? 'Ctrl' : e.shiftKey ? 'Shift' : undefined
       MainProcess.priceCheckMouse('enter', key)
     })
+    document.addEventListener('mouseleave', (e) => {
+      const key = e.ctrlKey ? 'Ctrl' : e.shiftKey ? 'Shift' : undefined
+      MainProcess.priceCheckMouse('leave', key)
+    })
     document.addEventListener('click', () => { MainProcess.priceCheckMouse('click') })
-    document.addEventListener('mouseleave', () => { MainProcess.priceCheckMouse('leave') })
 
     document.addEventListener('keyup', (e) => {
       if (e.key === 'Escape') {
